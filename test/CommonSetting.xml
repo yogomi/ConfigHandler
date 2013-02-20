@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?><haconfig>
+<dhcp>
+<server auto_server_restart="on" launch_on_start="" server_on_manager_port="on" watch_server_exist="on"><delete_lease_info fri="" hour="4" minute="40" mon="" satur="" sun="" thurs="" tues="" webnes=""/><mail active_standby_check="" d3_mail_account="" mail_account="" smtp_server="" status_check=""/></server>
+</dhcp>
+</haconfig>
