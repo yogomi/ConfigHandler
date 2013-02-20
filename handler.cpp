@@ -9,14 +9,10 @@
 namespace xmlch
 {
 
+using namespace boost::property_tree;
+
 Config::Config()
 {
-    return;
-}
-
-Config::Config(const std::string& s)
-{
-    std::cout << s << std::endl;
     return;
 }
 
@@ -25,9 +21,29 @@ Config::~Config()
     return;
 }
 
-void Config::open(const std::string& s)
+void Config::open(const std::string& filename)
 {
-    std::cout << s << std::endl;
+    read_xml(filename, _tree);
+    return; 
+}
+
+void Config::read(const std::string& key)
+{
+    if(boost::optional<std::string> str = _tree.get_optional<std::string>(key)){
+        std::cout << str.get() << std::endl;
+    }else{
+        std::cout << "no property: " << key << std::endl;
+    }
+    return;
+}
+
+void Config::getElements(const std::string& tagname)
+{
+    if(boost::optional<std::string> str = _tree.get_optional<std::string>(tagname)){
+        std::cout << str.get() << std::endl;
+    }else{
+        std::cout << "no property: " << std::endl;
+    }
     return; 
 }
 
@@ -39,6 +55,9 @@ BOOST_PYTHON_MODULE(XMLConfHandler)
     using namespace xmlch;
     using namespace boost::python;
     class_<Config>("XMLConfig")
-        .def("open", &Config::open);
+        .def("open", &Config::open)
+        .def("read", &Config::read)
+        .def("getElements", &Config::getElements)
+        ;
 }
 
