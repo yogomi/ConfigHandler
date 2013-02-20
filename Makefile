@@ -3,10 +3,10 @@ TARGET=XMLConfHandler.so
 SRCS=handler.cpp
 OBJS=$(SRCS:.cpp=.o)
 
-#INCLUDES:=$(shell xml2-config --cflags)
-INCLUDES+= -fPIC -I/usr/include/python2.6
-#LIBS:=$(shell xml2-config --libs)
-LIBS+= -lpython2.6 -lboost_python
+INCLUDES:=$(shell python2-config --includes)
+INCLUDES+= -fPIC
+LIBS:=$(shell python2-config --libs)
+LIBS+= -lboost_python
 
 CFLAGS= -Wall
 CXXFLAGS= $(CFLAGS) $(INCLUDES)
