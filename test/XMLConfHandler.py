@@ -9,9 +9,9 @@ class XMLConfig:
     filename=""
     def open(self, f):
         self.doc = xml.dom.minidom.parse(f)
+        self.filename=f
 
     def getAttr(self, tag_list, key):
-        print tag_list
         elems=self._getElements(self.doc, tag_list[0], True)
         for tag in tag_list[1:]:
             elems=self._getElements(elems[0], tag, True)
@@ -26,20 +26,32 @@ class XMLConfig:
             dic[key] = elems[0].getAttribute(key)
         return dic
 
+    def getAttrDictById(self, tag_list, enum_key_tag, _id):
+        return self.getAttrDictList(tag_list,
+                    enum_key_tag,
+                    _id,
+                    1)[0]
+
+
     def getAttrDictList(self, tag_list, enum_key_tag, start=0, limit=None):
+        l=[]
+        start=int(start)
         _id=start
         elems=self._getElements(self.doc, tag_list[0], True)
-        for tag in tag_list[1:]:
-            elems=self._getElements(elems[0], tag, True)
-        elems=self._getElements(elems[0], enum_key_tag, True)
-        l=[]
+        try:
+            for tag in tag_list[1:]:
+                elems=self._getElements(elems[0], tag, True)
+            elems=self._getElements(elems[0], enum_key_tag, True)
+        except ValueError, e:
+            return l
         es=elems[start:]
         if limit:
+            limit=int(limit)
             es=elems[start:start+limit]
         for elem in es:
             dic = dict(id=_id)
-            for key in elems[0].attributes.keys():
-                dic[key] = elems[0].getAttribute(key)
+            for key in elem.attributes.keys():
+                dic[key] = elem.getAttribute(key)
             l.append(dic)
             _id=_id+1
         return l
@@ -47,7 +59,7 @@ class XMLConfig:
     def setDhcpClient(self, data):
         items = []
         try:
-            items = self.getAttrDicList(["haconfig", "dhcp", "clientList"],
+            items = self.getAttrDictList(["haconfig", "dhcp", "clientList"],
                'client')
         except TypeError, e:
             pass
@@ -71,7 +83,8 @@ class XMLConfig:
             elems[0].parentNode.replaceChild(client,elems[int(data['item_id'])])
         else:
             op = 'add'
-            items = self.getDhcpClientList()
+            items = self.getAttrDictList(["haconfig", "dhcp", "clientList"],
+               'client')
             if len(items) > MAX_COMMON_CLIENT:
                 raise TypeError('full')
             elems[0].appendChild(client)
@@ -81,22 +94,28 @@ class XMLConfig:
         elems = self._getElements(self.doc, "haconfig", True)
         elems = self._getElements(elems[0], "dhcp")
         elems = self._getElements(elems[0], "clientList")
-        if id == "all":
+        if _id == "all":
             op = "all_delete"
             elems[0].parentNode.removeChild(elems[0])
         else:
             op = "delete"
-            list = id.split(",")
+            list = _id.split(",")
             list.sort(reverse=True)
             for i in range(len(list)):
-                items = self.getDhcpClient(list[i])
+                items = self.getAttrDictById(
+                            ["haconfig", "dhcp", "clientList"],
+                             "client", 
+                             list[i])
                 logDic.append({'mac': items['mac']})
             elems = self._getElements(elems[0], "client")
             for i in range(len(list)):
                 elems[0].parentNode.removeChild(elems[int(list[i])])
+        return logDic
 
-    def write():
-        f = open(self.filename, "w")
+    def write(self, filename=None):
+        if filename == None:
+            filename=self.filename
+        f = open(filename, "w")
         self.doc.writexml(f, encoding='utf-8')
         f.close()
 
