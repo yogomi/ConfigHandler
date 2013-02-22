@@ -3,9 +3,9 @@ TARGET=XMLConfHandler.so
 SRCS=handler.cpp
 OBJS=$(SRCS:.cpp=.o)
 
-INCLUDES:=$(shell python2-config --includes)
+INCLUDES:=$(shell python2.6-config --includes)
 INCLUDES+= -fPIC
-LIBS:=$(shell python2-config --libs)
+LIBS:=$(shell python2.6-config --libs)
 LIBS+= -lboost_python
 
 CFLAGS= -Wall
