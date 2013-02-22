@@ -76,7 +76,7 @@ class XMLConfig:
                 raise TypeError('full')
             elems[0].appendChild(client)
 
-    def delDhcpClient(self._id)
+    def delDhcpClient(self, _id):
         logDic = []
         elems = self._getElements(self.doc, "haconfig", True)
         elems = self._getElements(elems[0], "dhcp")
@@ -93,6 +93,7 @@ class XMLConfig:
                 logDic.append({'mac': items['mac']})
             elems = self._getElements(elems[0], "client")
             for i in range(len(list)):
+                elems[0].parentNode.removeChild(elems[int(list[i])])
 
     def write():
         f = open(self.filename, "w")
