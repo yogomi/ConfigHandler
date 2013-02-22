@@ -9,6 +9,7 @@
 namespace xmlch
 {
 
+using namespace boost::python;
 using namespace boost::property_tree;
 
 Config::Config()
@@ -23,7 +24,8 @@ Config::~Config()
 
 void Config::open(const std::string& filename)
 {
-    read_xml(filename, _tree);
+    _filename = filename;
+    read_xml(_filename, _tree);
     return; 
 }
 
@@ -37,12 +39,31 @@ void Config::read(const std::string& key)
     return;
 }
 
-void Config::getElements(const std::string& tagname)
+std::string Config::getAttr(const std::string& tag, const std::string& key)
 {
-    if(boost::optional<std::string> str = _tree.get_optional<std::string>(tagname)){
-        std::cout << str.get() << std::endl;
-    }else{
-        std::cout << "no property: " << std::endl;
+    return _tree.get<std::string>(tag + ".<xmlattr>." + key);
+}
+
+dict Config::getAttrDict(const std::string& tag)
+{
+    ptree pt = _tree.get_child(tag + ".<xmlattr>");
+    iterator aa = pt.iterator.begin();
+    //std::cout << pt.iterator.first << std::endl;
+    //iterator it = pt.iterator.begin();
+    //auto end = keys.end();
+    //for(; it!=end; ++it){
+    //    std::cout << pt.first << std::endl;
+    //}
+    return dict();
+}
+
+void Config::setElements(const dict& dic)
+{
+    list l = dic.keys();
+    std::cout << len(l) << std::endl;
+    for( int i=0; i<len(l); i++ ){
+        std::string a = extract<std::string>(l[i]);
+        std::cout << a << std::endl;
     }
     return; 
 }
@@ -57,7 +78,9 @@ BOOST_PYTHON_MODULE(XMLConfHandler)
     class_<Config>("XMLConfig")
         .def("open", &Config::open)
         .def("read", &Config::read)
-        .def("getElements", &Config::getElements)
+        .def("getAttr", &Config::getAttr)
+        .def("getAttrDict", &Config::getAttrDict)
+        .def("setElements", &Config::setElements)
         ;
 }
 

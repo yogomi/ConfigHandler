@@ -1,8 +1,6 @@
 #!/usr/bin/python
 import sys
 
-sys.path.append("../lib")
-
 import XMLConfHandler
 
 ch=XMLConfHandler.XMLConfig()
@@ -12,5 +10,9 @@ section=["haconfig", "dhcp", "server"]
 
 #ch.getElements(".".join(section))
 
-ch.read("haconfig.dhcp.server.delete_lease_info.<xmlattr>.hour")
+print ch.getAttr(["haconfig", "dhcp", "server", "delete_lease_info"], "minute" )
+print ch.getAttrDict(["haconfig", "dhcp", "server", "delete_lease_info"])
+print ch.getAttrDictList(["haconfig", "dhcp", "clientList"], "client")
+print ch.getAttrDictList(["haconfig", "dhcp", "clientList"], "client", 1, 1)
+#ch.setElements(dict(abc="bb", add="aa"))
 
